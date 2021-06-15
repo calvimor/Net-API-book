@@ -11,7 +11,7 @@ namespace Nexos.CAVM.API.Entities
     public class Book: BaseEntity
     {
         [Required]
-        [MaxLength(150)]
+        [MaxLength(350)]
         public string Title { get; set; }
 
         public int Year { get; set; }

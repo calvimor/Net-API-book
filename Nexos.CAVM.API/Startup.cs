@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Nexos.CAVM.API.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,9 @@ namespace Nexos.CAVM.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureCors();
+            services.ConfigureSqlServerContext(Configuration);
+            services.ConfigureRepositoryWrapper();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -46,7 +50,7 @@ namespace Nexos.CAVM.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("CorsPolicy");
             app.UseRouting();
 
             app.UseAuthorization();
