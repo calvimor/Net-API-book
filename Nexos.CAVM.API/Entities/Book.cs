@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Nexos.CAVM.API.Entities
 {
     //Registrar los datos de un libro: 
-    //Titulo, Año, Genero, Número de páginas, Editorial,    //Autor.
+    //Titulo, Año, Genero, Número de páginas, Editorial, Autor.
     public class Book: BaseEntity
     {
         [Required]

@@ -20,7 +20,13 @@ namespace Nexos.CAVM.API.Services
             return await FindAll().ToListAsync();
         }
 
-        
+        public async Task<Publisher> GetPublisherByIdAsync(Guid publisherId)
+        {
+            return await FindByCondition(p => publisherId.Equals(p.Id))
+                .FirstOrDefaultAsync();
+        }
+
+
         public void CreatePublisher(Publisher publisher)
         {
             Create(publisher);
@@ -34,6 +40,13 @@ namespace Nexos.CAVM.API.Services
         public void UpdatePublisher(Publisher publisher)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> CanAddBook(Guid publisherId)
+        {
+            var publisher = await GetPublisherByIdAsync(publisherId);
+
+            return publisher.MaxNumberBook == -1 || publisher.MaxNumberBook >= publisher.Books.Count();
         }
     }
 }

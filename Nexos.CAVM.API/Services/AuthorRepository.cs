@@ -17,12 +17,17 @@ namespace Nexos.CAVM.API.Services
         }
         public async Task<IEnumerable<Author>> GetAllAuthorsAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                    .Include(a => a.Books)
+                        .ThenInclude(b => b.Publisher)
+                    .ToListAsync();
         }
 
         public async Task<Author> GetAuthorByIdAsync(Guid authorId)
         {
             return await FindByCondition(p => authorId.Equals(p.Id))
+                .Include(a => a.Books)
+                    .ThenInclude(b => b.Publisher)
                 .FirstOrDefaultAsync();
         }
 

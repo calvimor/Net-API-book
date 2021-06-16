@@ -9,6 +9,8 @@ namespace Nexos.CAVM.API.Services
     public interface IPublisherRepository
     {
         Task<IEnumerable<Publisher>> GetAllPublishersAsync();
+        Task<Publisher> GetPublisherByIdAsync(Guid publisherId);
+        Task<bool> CanAddBook(Guid publisherId);
         void CreatePublisher(Publisher publisher);
         void UpdatePublisher(Publisher publisher);
         void DeletePublisher(Publisher publisher);

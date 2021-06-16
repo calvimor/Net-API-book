@@ -30,6 +30,6 @@ namespace Nexos.CAVM.API.Entities
 
         public int MaxNumberBook { get; set; }
 
-        public List<Book> Books { get; set; }
+        public List<Book> Books { get; set; }        
     }
 }

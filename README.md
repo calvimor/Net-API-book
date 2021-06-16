@@ -1,3 +1,14 @@
+# .Net API
+
+Se requiere un API RESTFul en .NET Core o NET 5 que permita:
+ Registrar los datos de un libro: Titulo, Año, Genero, Número de páginas, Editorial,
+Autor.
+ Registrar los datos de los autores: Nombre completo, Fecha de nacimiento, Ciudad
+de procedencia, Correo electrónico.
+ Registrar los datos de las editoriales: Nombre, Dirección de Correspondencia,
+Teléfono, Correo electrónico, Máximo de libros registrados.
+
+
 # ClientApp
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.7.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nexos.CAVM.API.Context;
 using Nexos.CAVM.API.Entities;
+using Nexos.CAVM.API.Exceptions;
 using Nexos.CAVM.API.ResourceParameters;
 using System;
 using System.Collections.Generic;
@@ -9,17 +10,20 @@ using System.Threading.Tasks;
 
 namespace Nexos.CAVM.API.Services
 {
-    public class BookRepository: RepositoryBase<Book>, IBookRepository
+    public class BookRepository: RepositoryBase<Book>, IBookRepository, IDisposable
     {
-        public BookRepository(ProjectContext projectContext)
-            : base(projectContext)
+        public BookRepository(ProjectContext _context)
+            : base(_context)
         {
 
         }
 
         public async Task<IEnumerable<Book>> GetAllBookAsync()
         {
-            return await FindAll().ToListAsync();
+            return await FindAll()
+                        .Include(b => b.Author)
+                        .Include(b => b.Publisher)
+                        .ToListAsync();
         }
 
         public async Task<IEnumerable<Book>> GetBooks(BookResourceParameters bookResourceParameters)
@@ -65,27 +69,42 @@ namespace Nexos.CAVM.API.Services
                 collection = collection.Where(a => a.Year == year);
             }
 
-            return collection.ToList();
+            return collection
+                    .Include(b => b.Author)
+                    .Include(b => b.Publisher)
+                    .ToList();
         }
 
         public async Task<Book> GetBookByIdAsync(Guid bookId)
         {
-            return await FindByCondition(p => bookId.Equals(p.Id))
+            return await FindByCondition(b => bookId.Equals(b.Id))
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
                 .FirstOrDefaultAsync();
         }
 
         public void CreateBook(Book book)
         {
-            // TODO validate author and publisher
+            var collection = RepositoryContext.Publishers as IQueryable<Publisher>;
+            collection = collection.Where(p => p.Id == book.PublisherId).Include(p => p.Books);
 
-            if(!FindByCondition(m => m.AuthorId.Equals(book.AuthorId)).Any())
+            var publisher = collection
+                    .SingleOrDefaultAsync()                    
+                    .Result;
+            
+            //if(!publisher.CanAddBook())
+            //{
+            //    throw new BusinessRuleException("No es posible registrar el libro, se alcanzó el máximo permitido.");
+            //}
+
+            if (!FindByCondition(m => m.AuthorId.Equals(book.AuthorId)).Any())
             {
-
+                throw new BusinessRuleException("El autor no está registrado.");
             }
 
             if (!FindByCondition(m => m.PublisherId.Equals(book.PublisherId)).Any())
             {
-
+                throw new BusinessRuleException("La editorial no está registrada.");
             }
 
             Create(book);
@@ -93,12 +112,30 @@ namespace Nexos.CAVM.API.Services
 
         public void DeleteBook(Book book)
         {
-            throw new NotImplementedException();
+            Delete(book);
         }
 
         public void UpdateBook(Book book)
         {
-            throw new NotImplementedException();
+            Update(book);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (RepositoryContext != null)
+                {
+                    RepositoryContext.Dispose();
+                    RepositoryContext = null;
+                }
+            }
         }
     }
 }
