@@ -10,7 +10,7 @@ import { BookService } from "../services/book.service";
 <table class="table table-bordered table-striped table-hover" id="book-table">
   <thead>
     <tr>
-      <th >Title </th>
+      <th >Título </th>
       <th >Year </th>
       <th >Género </th>
       <th ># Pág </th>
